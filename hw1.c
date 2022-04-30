@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <unistd.h>
 
 //defining a node struct. it will hold student's informations.
 struct node{
@@ -8,18 +8,35 @@ struct node{
     char name[50];
     struct node* next;
 };
+//I recoded strcat & strcpy functions when i was studying in a C rush course last semester break. So i used them for fun
+char	*ft_strcat(char *dest, char *src)
+{
+	int	i= 0, j = 0;
+	while (dest[i] != '\0')
+		i++;
+	while (src[j] != '\0')
+		dest[i++] = src [j++];
+	dest[i] = '\0';
+	return (dest);
+}
+
+char	*ft_strcpy(char *dest, char *src)
+{
+	int	a;
+	for(a = 0; src[a] != '\0'; a++) dest[a] = src[a];
+	dest[a] = '\0';
+	return (dest);
+}
 
 //this function will delete the node having specified id number
 struct node* ft_deletion(struct node *stack,int delnum)
 {
     struct node *curr = stack, *freenode;    //one struct for current node, one for the node you're willing to delete
-
     if(stack == NULL)     //if stack is empty,  it will warn you
     {
         printf("no data found to delete/sort!\n");
         return stack;
     }
-    
     if(curr->num == delnum)    //if first node is the searched node, it will delete it first.
     {
         freenode = curr;
@@ -27,16 +44,13 @@ struct node* ft_deletion(struct node *stack,int delnum)
         free(freenode);
         return curr;
     }
-
     while (curr->next)    //searching the node
     {
         if(curr->next->num == delnum)
             break;
-
         else
             curr = curr->next;
     }
-
     if(curr->next == NULL)    //if numbers doesn't match, it will execute the condition below
         printf("numbers not matched..\n");
 
@@ -48,6 +62,7 @@ struct node* ft_deletion(struct node *stack,int delnum)
     }
     return stack;
 }
+
 //this function will push the name and id into the stack. it will push like Head->5.->4.->3.->2.->1.->Null.
 struct node* ft_push(char st_name[50], int st_id,struct node *stack)
 {
@@ -55,7 +70,7 @@ struct node* ft_push(char st_name[50], int st_id,struct node *stack)
     //adding the name and id into created node.
     new_student->num = st_id;
     new_student->next = NULL;
-    strcpy(new_student->name , st_name);
+    ft_strcpy(new_student->name , st_name);
     //if stack is empty. it will return the first student.
     if ( stack == NULL)
         return new_student;
@@ -63,7 +78,8 @@ struct node* ft_push(char st_name[50], int st_id,struct node *stack)
     new_student->next = stack;
     stack = new_student;
     return stack;
-} 
+}
+
 //this function below will sort the datas. variable mod is to get the mod of the id in order to list it.
 struct node* ft_sorter(struct node* stack, int mod)
 {
@@ -81,14 +97,12 @@ struct node* ft_sorter(struct node* stack, int mod)
         max_node = curr;
         while (curr)    //until current == NULL
         {
-            if((id % mod) >= (curr->num % mod)) //until finding the max id, it will keep searching
-                curr = curr->next;
-            else if ((id % mod) < (curr->num % mod)) // when it finds max id, it will  save it's data into max_node
+            if ((id % mod) < (curr->num % mod)) // when it finds max id, it will  save it's data into max_node
             {
                 max_node = curr;
                 id = max_node->num;
-                curr = curr->next;
             }
+            curr = curr->next;
         }
         //sending the current max node into the push function. the big-O of sorting function is = O[n^2] (i guess?)
         sorted_stack = ft_push(max_node->name,max_node->num,sorted_stack);
@@ -125,8 +139,8 @@ int main()
                         scanf("%s", name);
                         printf("enter surname: ");
                         scanf("%s",surname);
-                        strcat(name," "); // adding space next to name
-                        strcat(name,surname); // adding surname next to space
+                        ft_strcat(name," "); // adding space next to name
+                        ft_strcat(name,surname); // adding surname next to space
                         stack = ft_push(name,idnum,stack); //pushing new data into stack
                         break;
                 case 2: 
@@ -159,7 +173,7 @@ int main()
                     printf("%d\t%s\n",curr->num,curr->name);
                     curr = curr->next;
                 }
-                printf("\\\\\\\\\\\\_______///////\n\n");
+                printf("\\\\\\\\\\\\\\_______///////\n\n");
             }
         }
     }
