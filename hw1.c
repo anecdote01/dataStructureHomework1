@@ -12,35 +12,35 @@ struct node{
 //this function will delete the node having specified id number
 struct node* ft_deletion(struct node *stack,int delnum)
 {
-    //one struct for current node, one for the node you're willing to delete
-    struct node *curr = stack, *freenode;
-    //if stack is empty,  it will warn you
-    if(stack == NULL) 
+    struct node *curr = stack, *freenode;    //one struct for current node, one for the node you're willing to delete
+
+    if(stack == NULL)     //if stack is empty,  it will warn you
     {
         printf("no data found to delete/sort!\n");
         return stack;
     }
-    //if first node is the searched node, it will delete it first.
-    if(curr->num == delnum)
+    
+    if(curr->num == delnum)    //if first node is the searched node, it will delete it first.
     {
         freenode = curr;
         curr = curr->next;
         free(freenode);
         return curr;
     }
-    //searching the node
-    while (curr->next)
+
+    while (curr->next)    //searching the node
     {
         if(curr->next->num == delnum)
             break;
+
         else
             curr = curr->next;
     }
-    //if numbers doesn't match, it will execute the condition below
-    if(curr->next == NULL)
+
+    if(curr->next == NULL)    //if numbers doesn't match, it will execute the condition below
         printf("numbers not matched..\n");
-    //otherwise it will execute the condition below and delete the specified node
-    else
+
+    else    //otherwise it will execute the condition below and delete the specified node
     {
         freenode = curr->next;
         curr->next = curr->next->next;
@@ -48,84 +48,67 @@ struct node* ft_deletion(struct node *stack,int delnum)
     }
     return stack;
 }
-
-//this function will push the nodes from back. it will go like head-1.-2.-4.-5.-Null
-struct node *ft_push(char nam[50], int id,struct node * stack)
-{
-    struct node *curr , *new_student;
-    new_student = malloc(sizeof(struct node));
-    //strcpy will copy the variable 'nam' into newstudent's name.
-    strcpy(new_student->name, nam);        
-    new_student->num = id;     
-    new_student->next = NULL;                                                
-    curr = stack; 
-    if (!stack)
-        return new_student;
-
-    while (curr->next)
-        curr=curr->next;
-    curr->next=new_student;
-    
-    return stack;
-}
-/*
+//this function will push the name and id into the stack. it will push like Head->5.->4.->3.->2.->1.->Null.
 struct node* ft_push(char st_name[50], int st_id,struct node *stack)
 {
     struct node *new_student = malloc(sizeof(struct node));
+    //adding the name and id into created node.
     new_student->num = st_id;
     new_student->next = NULL;
     strcpy(new_student->name , st_name);
+    //if stack is empty. it will return the first student.
     if ( stack == NULL)
         return new_student;
+    //if stack is not empty, it will push new student into stack.
     new_student->next = stack;
     stack = new_student;
     return stack;
 } 
-*/
+//this function below will sort the datas. variable mod is to get the mod of the id in order to list it.
 struct node* ft_sorter(struct node* stack, int mod)
 {
+    //struct for sorted stack, current node to hold the current node of stack & max node to hold the data of the node having max id num.
     struct node *sorted_stack = (struct node*)malloc(sizeof(struct node));
-    struct node *curr, *min_node;
+    struct node *curr, *max_node;
     int id;
     sorted_stack = NULL;
-    if(stack == NULL)
+    if(stack == NULL)     //if nothing to sort, it will return null struct.
         return stack;
-    while (stack)
+    while (stack)    //until stack == NULL
     {
         curr = stack;
         id = curr->num;
-        min_node = curr;
-        while (curr)
+        max_node = curr;
+        while (curr)    //until current == NULL
         {
-            if((id % mod) <= (curr->num % mod))
+            if((id % mod) >= (curr->num % mod)) //until finding the max id, it will keep searching
                 curr = curr->next;
-            else if ((id % mod) > (curr->num % mod))
+            else if ((id % mod) < (curr->num % mod)) // when it finds max id, it will  save it's data into max_node
             {
-                min_node = curr;
-                id = min_node->num;
+                max_node = curr;
+                id = max_node->num;
                 curr = curr->next;
             }
         }
-        sorted_stack = ft_push(min_node->name,min_node->num,sorted_stack);
-        stack = ft_deletion(stack,min_node->num);
+        //sending the current max node into the push function. the big-O of sorting function is = O[n^2] (i guess?)
+        sorted_stack = ft_push(max_node->name,max_node->num,sorted_stack);
+        //Basiclly i used 2 stack. everytime i put one from stack into sorted_stack, it will delete the node from stack.
+        stack = ft_deletion(stack,max_node->num);
     }
     return sorted_stack;
 }
 
 int main()
 {
-    struct node *stack = NULL;
-    struct node *curr;
-    char name[50];
-    char surname[50];
-    int idnum;
-    int menuInput;
+    struct node *stack = NULL, *curr;    //creating the main stack and current node
+    char name[50], surname[50];     //creating to char array for name & surname
+    int idnum, menuInput;
     printf("1- Enter school number:\n2- Display school numbers sorted by id:\n3- Display school numbers sorted by year\n4- Display school numbers sorted by the faculty codes\n5- Detele a record by school number\n6- Exit\n");
     while(1)
     {
         printf("enter choice: ");
         scanf("%d",&menuInput);
-        if(menuInput <= 0 || menuInput >=7)
+        if(menuInput <= 0 || menuInput >=7) // invalid menu input detector.
             printf("please write a valid choice between 1-5\n");
         else
         {
@@ -133,7 +116,7 @@ int main()
             {
                 case 1: printf("\nenter school number: ");
                         scanf("%d",&idnum);
-                        if((idnum / 100000000) <= 0 || (idnum / 100000000) > 9)
+                        if((idnum / 100000000) <= 0 || (idnum / 100000000) > 9) //invalid id detector
                             {
                                 printf("invalid id!\n");
                                 break;
@@ -142,41 +125,34 @@ int main()
                         scanf("%s", name);
                         printf("enter surname: ");
                         scanf("%s",surname);
-                        strcat(name," ");
-                        strcat(name,surname);
-                        stack = ft_push(name,idnum,stack);
+                        strcat(name," "); // adding space next to name
+                        strcat(name,surname); // adding surname next to space
+                        stack = ft_push(name,idnum,stack); //pushing new data into stack
                         break;
                 case 2: 
-                    stack = ft_sorter(stack,10000);
+                    stack = ft_sorter(stack,10000); // 10000 stands for %10000. it will sort by ID
                     curr = stack;
                     printf("////////Sorted by ID:\\\\\\\\\n");
                     break;
                 case 3: 
-                    stack = ft_sorter(stack,1000000);
+                    stack = ft_sorter(stack,1000000); //it will sort by year
                     curr = stack;
                     printf("///////Sorted by year\\\\\\\\\\\n");
                     break;
                 case 4: 
-                    stack = ft_sorter(stack,1000000000);
+                    stack = ft_sorter(stack,1000000000); //it will sort by faculty code
                     curr = stack;
                     printf("///////Sorted by faculty code\\\\\\\\\\\n");
                     break;
                 case 5:
                     printf("enter school number you want to delete: ");
                     scanf("%d",&idnum);
-                    stack = ft_deletion(stack,idnum);
+                    stack = ft_deletion(stack,idnum); //it will search id in stack and then delete it
                     break;
                 case 6:
-                    curr = stack;
-                    while (curr)
-                    {
-                        printf("%d\t%s\n",curr->num,curr->name);
-                        curr = curr->next;
-                    }
-                    break;
                     exit(0);
             }
-            if (menuInput <= 4 && menuInput >= 2)
+            if (menuInput <= 4 && menuInput >= 2) //this condition will print the IDs and names whenever we choose to print ID,year or faculty code.
             {
                 while (curr)
                 {
